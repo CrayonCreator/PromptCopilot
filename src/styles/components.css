@@ -159,11 +159,13 @@ html, body {
   display: flex;
   flex-direction: column;
   height: 100%;
+  min-height: 0; /* 确保flex子项能够收缩 */
 }
 
 .prompt-list {
   flex: 1;
   overflow-y: auto;
+  min-height: 0; /* 确保能够滚动 */
 }
 
 .prompt-item {

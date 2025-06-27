@@ -51,7 +51,13 @@ export function PromptList({ prompts, searchQuery, selectedIndex, onSelectPrompt
   }, [filteredPrompts, onFilteredPromptsChange]);
 
   useEffect(() => {
-    if (selectedItemRef.current && listRef.current) {
+    if (filteredPrompts.length > 0 && selectedIndex >= filteredPrompts.length) {
+      return;
+    }
+  }, [filteredPrompts.length, selectedIndex]);
+
+  useEffect(() => {
+    if (selectedItemRef.current && listRef.current && filteredPrompts.length > 0) {
       const listContainer = listRef.current;
       const selectedItem = selectedItemRef.current;
       
@@ -67,15 +73,25 @@ export function PromptList({ prompts, searchQuery, selectedIndex, onSelectPrompt
         const listHeight = listContainer.clientHeight;
         const itemHeight = selectedItem.clientHeight;
         
-        const targetScrollTop = itemOffsetTop - (listHeight / 2) + (itemHeight / 2);
+        let targetScrollTop;
+        
+        if (selectedIndex === 0) {
+          targetScrollTop = 0;
+        }
+        else if (selectedIndex === filteredPrompts.length - 1) {
+          targetScrollTop = listContainer.scrollHeight - listHeight;
+        }
+        else {
+          targetScrollTop = itemOffsetTop - (listHeight / 2) + (itemHeight / 2);
+        }
         
         listContainer.scrollTo({
-          top: Math.max(0, targetScrollTop), // 确保不会滚动到负值
+          top: Math.max(0, Math.min(targetScrollTop, listContainer.scrollHeight - listHeight)),
           behavior: 'smooth'
         });
       }
     }
-  }, [selectedIndex]);
+  }, [selectedIndex, filteredPrompts.length]);
 
   if (prompts.length === 0) {
     return <div className="empty-state">No prompts found</div>;
