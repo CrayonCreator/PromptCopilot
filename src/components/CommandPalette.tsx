@@ -4,10 +4,12 @@ import { usePrompts } from '../hooks/usePrompts';
 import { useSearch } from '../hooks/useSearch';
 import { useKeyboard } from '../hooks/useKeyboard';
 import { useTheme } from '../hooks/useTheme';
+import { useToast } from '../hooks/useToast';
 import { SearchBox } from './SearchBox';
 import { PromptList } from './PromptList';
 import { PromptEditor } from './PromptEditor';
 import { ConfirmDialog } from './ConfirmDialog';
+import { Toast } from './Toast';
 
 export function CommandPalette() {
   const [viewMode, setViewMode] = useState<ViewMode>('list');
@@ -18,6 +20,7 @@ export function CommandPalette() {
   }>({ isOpen: false, prompt: null });
   
   const { theme, toggleTheme } = useTheme();
+  const { toasts, showSuccess } = useToast();
   
   const { 
     prompts, 
@@ -26,7 +29,7 @@ export function CommandPalette() {
     updatePrompt, 
     deletePrompt, 
     usePrompt 
-  } = usePrompts();
+  } = usePrompts(showSuccess);
   
   const { searchQuery, setSearchQuery, filteredPrompts } = useSearch(prompts);
 
@@ -177,6 +180,17 @@ export function CommandPalette() {
         onCancel={cancelDelete}
         isDangerous={true}
       />
+
+      {/* Toast 通知 */}
+      {toasts.map(toast => (
+        <Toast
+          key={toast.id}
+          message={toast.message}
+          type={toast.type}
+          isVisible={toast.isVisible}
+          onClose={() => {}}
+        />
+      ))}
     </div>
   );
 }

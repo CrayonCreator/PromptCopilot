@@ -33,12 +33,12 @@ pub fn update_last_used(id: i64, db: State<Database>) -> Result<(), String> {
 }
 
 #[tauri::command]
-pub fn paste_to_clipboard(content: String) -> Result<(), String> {
+pub fn paste_to_clipboard(content: String) -> Result<String, String> {
     let mut ctx: ClipboardContext = ClipboardProvider::new()
         .map_err(|e| format!("Failed to access clipboard: {}", e))?;
     
     ctx.set_contents(content)
         .map_err(|e| format!("Failed to set clipboard content: {}", e))?;
     
-    Ok(())
+    Ok("Prompt copied to clipboard!".to_string())
 }

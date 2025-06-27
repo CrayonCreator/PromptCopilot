@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { Prompt, PromptInput } from '../types/prompt';
 
-export function usePrompts() {
+export function usePrompts(showToast?: (message: string, type?: 'success' | 'error' | 'info') => void) {
   const [prompts, setPrompts] = useState<Prompt[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -59,10 +59,20 @@ export function usePrompts() {
 
   const usePrompt = async (prompt: Prompt) => {
     try {
-      await invoke('paste_to_clipboard', { content: prompt.content });
+      const message = await invoke<string>('paste_to_clipboard', { content: prompt.content });
       await invoke('update_last_used', { id: prompt.id });
+      
+      // 显示成功提示
+      if (showToast) {
+        showToast(message, 'success');
+      }
     } catch (error) {
       console.error('Failed to use prompt:', error);
+      
+      // 显示错误提示
+      if (showToast) {
+        showToast('Failed to copy prompt to clipboard', 'error');
+      }
     }
   };
 
