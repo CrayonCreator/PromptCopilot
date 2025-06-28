@@ -154,9 +154,18 @@ html, body {
   background: var(--btn-primary-hover);
 }
 
+/* PromptList 容器样式 */
+.prompt-list-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0; /* 确保flex子项能够收缩 */
+}
+
 .prompt-list {
   flex: 1;
   overflow-y: auto;
+  min-height: 0; /* 确保能够滚动 */
 }
 
 .prompt-item {
@@ -694,4 +703,46 @@ html, body {
 
 .toast.toast-hiding {
   animation: toastSlideOut 0.3s ease-in;
+}
+
+/* 标签栏样式 */
+.tag-bar {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-color);
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  background: var(--bg-primary);
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.tag-bar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+
+.tag-item {
+  flex-shrink: 0;
+  padding: 6px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tag-item:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.tag-item.selected {
+  background: var(--btn-primary);
+  color: white;
+  border-color: var(--btn-primary);
 }

@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ViewMode, Prompt } from '../types/prompt';
 import { usePrompts } from '../hooks/usePrompts';
-import { useSearch } from '../hooks/useSearch';
 import { useKeyboard } from '../hooks/useKeyboard';
 import { useTheme } from '../hooks/useTheme';
 import { useToast } from '../hooks/useToast';
@@ -14,6 +13,8 @@ import { Toast } from './Toast';
 export function CommandPalette() {
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [editingPrompt, setEditingPrompt] = useState<Prompt | undefined>();
+  const [filteredPrompts, setFilteredPrompts] = useState<Prompt[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState<{
     isOpen: boolean;
     prompt: Prompt | null;
@@ -30,8 +31,6 @@ export function CommandPalette() {
     deletePrompt, 
     usePrompt 
   } = usePrompts(showSuccess);
-  
-  const { searchQuery, setSearchQuery, filteredPrompts } = useSearch(prompts);
 
 
 
@@ -136,11 +135,13 @@ export function CommandPalette() {
           </div>
           
           <PromptList
-            prompts={filteredPrompts}
+            prompts={prompts}
+            searchQuery={searchQuery}
             selectedIndex={selectedIndex}
             onSelectPrompt={handleSelectPrompt}
             onEditPrompt={handleEditPrompt}
             onDeletePrompt={handleDeletePrompt}
+            onFilteredPromptsChange={setFilteredPrompts}
           />
 
           {/* 快捷键提示 */}
