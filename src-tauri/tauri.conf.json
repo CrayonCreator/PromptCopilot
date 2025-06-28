@@ -10,16 +10,17 @@
   },
   "app": {
     "windows": [
-      {
+     {
         "title": "Prompt Copilot",
         "width": 600,
         "height": 400,
         "center": true,
-        "decorations": false,
+        "decorations": true,
         "alwaysOnTop": true,
         "skipTaskbar": true,
         "visible": true,
-        "resizable": false
+        "resizable": true,
+        "dragDropEnabled": true
       }
     ],
     "security": {
