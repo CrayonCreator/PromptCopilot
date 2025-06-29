@@ -23,7 +23,7 @@ export function CommandPalette() {
   const promptListRef = useRef<PromptListRef>(null);
   
   const { theme, toggleTheme } = useTheme();
-  const { toasts, showSuccess } = useToast();
+  const { toasts, showSuccess, hideToast } = useToast();
   
   const { 
     prompts, 
@@ -202,7 +202,7 @@ export function CommandPalette() {
           message={toast.message}
           type={toast.type}
           isVisible={toast.isVisible}
-          onClose={() => {}}
+          onClose={() => hideToast(toast.id)}
         />
       ))}
     </div>

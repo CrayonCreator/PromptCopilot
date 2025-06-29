@@ -28,7 +28,11 @@ export function Toast({
   if (!isVisible) return null;
 
   return (
-    <div className={`toast toast-${type} ${isVisible ? 'toast-visible' : ''}`}>
+    <div 
+      className={`toast toast-${type} ${isVisible ? 'toast-visible' : ''}`}
+      onClick={onClose}
+      style={{ cursor: 'pointer' }}
+    >
       <div className="toast-content">
         <span className="toast-icon">
           {type === 'success' && '✓'}
@@ -36,6 +40,16 @@ export function Toast({
           {type === 'info' && 'ℹ'}
         </span>
         <span className="toast-message">{message}</span>
+        <button 
+          className="toast-close" 
+          onClick={(e) => {
+            e.stopPropagation();
+            onClose();
+          }}
+          aria-label="关闭通知"
+        >
+          ×
+        </button>
       </div>
     </div>
   );
