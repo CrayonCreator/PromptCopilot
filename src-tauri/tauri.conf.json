@@ -12,12 +12,12 @@
     "windows": [
      {
         "title": "Prompt Copilot",
-        "width": 600,
-        "height": 400,
+        "width": 800,
+        "height": 600,
         "center": true,
         "decorations": true,
         "alwaysOnTop": true,
-        "skipTaskbar": true,
+        "skipTaskbar": false,
         "visible": true,
         "resizable": true,
         "dragDropEnabled": true
