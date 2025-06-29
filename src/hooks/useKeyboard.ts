@@ -7,13 +7,14 @@ interface KeyboardHandlers {
   onArrowDown: () => void;
   onArrowLeft?: () => void;
   onArrowRight?: () => void;
+  onSpace?: () => void;
 }
 
 export function useKeyboard(handlers: KeyboardHandlers) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const { onEnter, onEscape, onArrowUp, onArrowDown, onArrowLeft, onArrowRight } = handlers;
+  const { onEnter, onEscape, onArrowUp, onArrowDown, onArrowLeft, onArrowRight, onSpace } = handlers;
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -46,12 +47,18 @@ export function useKeyboard(handlers: KeyboardHandlers) {
             onArrowRight();
           }
           break;
+        case ' ':
+          if (onSpace) {
+            e.preventDefault();
+            onSpace();
+          }
+          break;
       }
     };
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [onEnter, onEscape, onArrowUp, onArrowDown, onArrowLeft, onArrowRight]);
+  }, [onEnter, onEscape, onArrowUp, onArrowDown, onArrowLeft, onArrowRight, onSpace]);
 
   return { selectedIndex, setSelectedIndex, containerRef };
 }

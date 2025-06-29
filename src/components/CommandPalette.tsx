@@ -7,6 +7,7 @@ import { useToast } from '../hooks/useToast';
 import { SearchBox } from './SearchBox';
 import { PromptList, PromptListRef } from './PromptList';
 import { PromptEditor } from './PromptEditor';
+import { PromptPreview } from './PromptPreview';
 import { ConfirmDialog } from './ConfirmDialog';
 import { Toast } from './Toast';
 
@@ -19,6 +20,7 @@ export function CommandPalette() {
     isOpen: boolean;
     prompt: Prompt | null;
   }>({ isOpen: false, prompt: null });
+  const [previewPrompt, setPreviewPrompt] = useState<Prompt | null>(null);
   
   const promptListRef = useRef<PromptListRef>(null);
   
@@ -86,32 +88,41 @@ export function CommandPalette() {
 
   const { selectedIndex, setSelectedIndex } = useKeyboard({
     onEnter: () => {
-      if (viewMode === 'list' && filteredPrompts.length > 0) {
+      if (viewMode === 'list' && filteredPrompts.length > 0 && !previewPrompt) {
         handleSelectPrompt(filteredPrompts[selectedIndex]);
       }
     },
     onEscape: () => {
-      if (viewMode !== 'list') {
+      if (previewPrompt) {
+        setPreviewPrompt(null);
+      } else if (viewMode !== 'list') {
         handleCancel();
       }
     },
+    onSpace: () => {
+      if (previewPrompt) {
+        setPreviewPrompt(null);
+      } else if (viewMode === 'list' && filteredPrompts.length > 0) {
+        setPreviewPrompt(filteredPrompts[selectedIndex]);
+      }
+    },
     onArrowUp: () => {
-      if (viewMode === 'list') {
+      if (viewMode === 'list' && !previewPrompt) {
         setSelectedIndex(prev => Math.max(0, prev - 1));
       }
     },
     onArrowDown: () => {
-      if (viewMode === 'list') {
+      if (viewMode === 'list' && !previewPrompt) {
         setSelectedIndex(prev => Math.min(filteredPrompts.length - 1, prev + 1));
       }
     },
     onArrowLeft: () => {
-      if (viewMode === 'list' && promptListRef.current) {
+      if (viewMode === 'list' && !previewPrompt && promptListRef.current) {
         promptListRef.current.navigateTagLeft();
       }
     },
     onArrowRight: () => {
-      if (viewMode === 'list' && promptListRef.current) {
+      if (viewMode === 'list' && !previewPrompt && promptListRef.current) {
         promptListRef.current.navigateTagRight();
       }
     }
@@ -207,6 +218,15 @@ export function CommandPalette() {
           onClose={() => hideToast(toast.id)}
         />
       ))}
+
+      {/* 全屏预览 */}
+      {previewPrompt && (
+        <PromptPreview
+          prompt={previewPrompt}
+          isOpen={true}
+          onClose={() => setPreviewPrompt(null)}
+        />
+      )}
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { PromptInput, Prompt } from '../types/prompt';
+import { MarkdownRenderer } from './MarkdownRenderer';
 
 interface PromptEditorProps {
   prompt?: Prompt;
@@ -13,6 +14,7 @@ export function PromptEditor({ prompt, onSave, onCancel }: PromptEditorProps) {
     content: '',
     tags: ''
   });
+  const [isPreviewMode, setIsPreviewMode] = useState(false);
 
   useEffect(() => {
     if (prompt) {
@@ -52,15 +54,39 @@ export function PromptEditor({ prompt, onSave, onCancel }: PromptEditorProps) {
           </div>
 
           <div className="form-group">
-            <label htmlFor="content">Content *</label>
-            <textarea
-              id="content"
-              value={formData.content}
-              onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-              placeholder="Enter prompt content..."
-              rows={6}
-              required
-            />
+            <div className="content-header">
+              <label htmlFor="content">Content *</label>
+              <div className="content-tabs">
+                <button
+                  type="button"
+                  className={`tab-button ${!isPreviewMode ? 'active' : ''}`}
+                  onClick={() => setIsPreviewMode(false)}
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  className={`tab-button ${isPreviewMode ? 'active' : ''}`}
+                  onClick={() => setIsPreviewMode(true)}
+                >
+                  Preview
+                </button>
+              </div>
+            </div>
+            {!isPreviewMode ? (
+              <textarea
+                id="content"
+                value={formData.content}
+                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                placeholder="Enter prompt content... (Supports Markdown)"
+                rows={8}
+                required
+              />
+            ) : (
+              <div className="content-preview">
+                <MarkdownRenderer content={formData.content} />
+              </div>
+            )}
           </div>
 
           <div className="form-group">
