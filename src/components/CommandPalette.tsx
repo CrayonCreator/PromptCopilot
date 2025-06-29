@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ViewMode, Prompt } from '../types/prompt';
 import { usePrompts } from '../hooks/usePrompts';
 import { useKeyboard } from '../hooks/useKeyboard';
 import { useTheme } from '../hooks/useTheme';
 import { useToast } from '../hooks/useToast';
 import { SearchBox } from './SearchBox';
-import { PromptList } from './PromptList';
+import { PromptList, PromptListRef } from './PromptList';
 import { PromptEditor } from './PromptEditor';
 import { ConfirmDialog } from './ConfirmDialog';
 import { Toast } from './Toast';
@@ -19,6 +19,8 @@ export function CommandPalette() {
     isOpen: boolean;
     prompt: Prompt | null;
   }>({ isOpen: false, prompt: null });
+  
+  const promptListRef = useRef<PromptListRef>(null);
   
   const { theme, toggleTheme } = useTheme();
   const { toasts, showSuccess } = useToast();
@@ -81,28 +83,38 @@ export function CommandPalette() {
     setEditingPrompt(undefined);
   };
 
-  const { selectedIndex, setSelectedIndex } = useKeyboard(
-    () => {
+  const { selectedIndex, setSelectedIndex } = useKeyboard({
+    onEnter: () => {
       if (viewMode === 'list' && filteredPrompts.length > 0) {
         handleSelectPrompt(filteredPrompts[selectedIndex]);
       }
     },
-    () => {
+    onEscape: () => {
       if (viewMode !== 'list') {
         handleCancel();
       }
     },
-    () => {
+    onArrowUp: () => {
       if (viewMode === 'list') {
         setSelectedIndex(prev => Math.max(0, prev - 1));
       }
     },
-    () => {
+    onArrowDown: () => {
       if (viewMode === 'list') {
         setSelectedIndex(prev => Math.min(filteredPrompts.length - 1, prev + 1));
       }
+    },
+    onArrowLeft: () => {
+      if (viewMode === 'list' && promptListRef.current) {
+        promptListRef.current.navigateTagLeft();
+      }
+    },
+    onArrowRight: () => {
+      if (viewMode === 'list' && promptListRef.current) {
+        promptListRef.current.navigateTagRight();
+      }
     }
-  );
+  });
 
   useEffect(() => {
     setSelectedIndex(0);
@@ -135,6 +147,7 @@ export function CommandPalette() {
           </div>
           
           <PromptList
+            ref={promptListRef}
             prompts={prompts}
             searchQuery={searchQuery}
             selectedIndex={selectedIndex}

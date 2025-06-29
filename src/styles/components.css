@@ -746,3 +746,8 @@ html, body {
   color: white;
   border-color: var(--btn-primary);
 }
+
+.tag-item.keyboard-selected {
+  box-shadow: 0 0 0 2px var(--input-focus);
+  outline: none;
+}

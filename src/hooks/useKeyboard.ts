@@ -1,8 +1,19 @@
 import { useState, useEffect, useRef } from 'react';
 
-export function useKeyboard(onEnter: () => void, onEscape: () => void, onArrowUp: () => void, onArrowDown: () => void) {
+interface KeyboardHandlers {
+  onEnter: () => void;
+  onEscape: () => void;
+  onArrowUp: () => void;
+  onArrowDown: () => void;
+  onArrowLeft?: () => void;
+  onArrowRight?: () => void;
+}
+
+export function useKeyboard(handlers: KeyboardHandlers) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const { onEnter, onEscape, onArrowUp, onArrowDown, onArrowLeft, onArrowRight } = handlers;
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -23,12 +34,24 @@ export function useKeyboard(onEnter: () => void, onEscape: () => void, onArrowUp
           e.preventDefault();
           onArrowDown();
           break;
+        case 'ArrowLeft':
+          if (onArrowLeft) {
+            e.preventDefault();
+            onArrowLeft();
+          }
+          break;
+        case 'ArrowRight':
+          if (onArrowRight) {
+            e.preventDefault();
+            onArrowRight();
+          }
+          break;
       }
     };
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [onEnter, onEscape, onArrowUp, onArrowDown]);
+  }, [onEnter, onEscape, onArrowUp, onArrowDown, onArrowLeft, onArrowRight]);
 
   return { selectedIndex, setSelectedIndex, containerRef };
 }

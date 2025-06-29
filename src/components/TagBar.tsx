@@ -3,10 +3,11 @@ import { useEffect, useRef } from 'react';
 interface TagBarProps {
   tags: string[];
   selectedTag: string | null;
+  selectedTagIndex?: number;
   onSelectTag: (tag: string | null) => void;
 }
 
-export function TagBar({ tags, selectedTag, onSelectTag }: TagBarProps) {
+export function TagBar({ tags, selectedTag, selectedTagIndex = 0, onSelectTag }: TagBarProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -28,15 +29,15 @@ export function TagBar({ tags, selectedTag, onSelectTag }: TagBarProps) {
   return (
     <div className="tag-bar" ref={containerRef}>
       <button
-        className={`tag-item ${selectedTag === null ? 'selected' : ''}`}
+        className={`tag-item ${selectedTag === null ? 'selected' : ''} ${selectedTagIndex === 0 ? 'keyboard-selected' : ''}`}
         onClick={() => onSelectTag(null)}
       >
         All
       </button>
-      {sortedTags.map((tag) => (
+      {sortedTags.map((tag, index) => (
         <button
           key={tag}
-          className={`tag-item ${selectedTag === tag ? 'selected' : ''}`}
+          className={`tag-item ${selectedTag === tag ? 'selected' : ''} ${selectedTagIndex === index + 1 ? 'keyboard-selected' : ''}`}
           onClick={() => onSelectTag(tag)}
         >
           {tag}

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useMemo } from 'react';
+import { useEffect, useRef, useState, useMemo, forwardRef, useImperativeHandle } from 'react';
 import { Prompt } from '../types/prompt';
 import { PromptItem } from './PromptItem';
 import { TagBar } from './TagBar';
@@ -11,21 +11,67 @@ interface PromptListProps {
   onEditPrompt: (prompt: Prompt) => void;
   onDeletePrompt: (id: number) => void;
   onFilteredPromptsChange: (prompts: Prompt[]) => void;
+  onTagSelectionChange?: (selectedTagIndex: number) => void;
 }
 
-export function PromptList({ prompts, searchQuery, selectedIndex, onSelectPrompt, onEditPrompt, onDeletePrompt, onFilteredPromptsChange }: PromptListProps) {
+export interface PromptListRef {
+  navigateTagLeft: () => void;
+  navigateTagRight: () => void;
+}
+
+export const PromptList = forwardRef<PromptListRef, PromptListProps>(({ 
+  prompts, 
+  searchQuery, 
+  selectedIndex, 
+  onSelectPrompt, 
+  onEditPrompt, 
+  onDeletePrompt, 
+  onFilteredPromptsChange,
+  onTagSelectionChange 
+}, ref) => {
   const listRef = useRef<HTMLDivElement>(null);
   const selectedItemRef = useRef<HTMLDivElement>(null);
   const tagBarRef = useRef<HTMLDivElement>(null);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [selectedTagIndex, setSelectedTagIndex] = useState(0);
 
   const allTags = useMemo(() => {
     const tagSet = new Set<string>();
     prompts.forEach(prompt => {
       prompt.tags.forEach(tag => tagSet.add(tag));
     });
-    return Array.from(tagSet);
+    return Array.from(tagSet).sort();
   }, [prompts]);
+
+  const tagsWithAll = useMemo(() => ['All', ...allTags], [allTags]);
+
+  const handleTagIndexChange = (newIndex: number) => {
+    const clampedIndex = Math.max(0, Math.min(newIndex, tagsWithAll.length - 1));
+    setSelectedTagIndex(clampedIndex);
+    
+    if (clampedIndex === 0) {
+      setSelectedTag(null);
+    } else {
+      setSelectedTag(allTags[clampedIndex - 1]);
+    }
+    
+    if (onTagSelectionChange) {
+      onTagSelectionChange(clampedIndex);
+    }
+  };
+
+  const navigateTagLeft = () => {
+    handleTagIndexChange(selectedTagIndex - 1);
+  };
+
+  const navigateTagRight = () => {
+    handleTagIndexChange(selectedTagIndex + 1);
+  };
+
+  useImperativeHandle(ref, () => ({
+    navigateTagLeft,
+    navigateTagRight
+  }));
 
   const filteredPrompts = useMemo(() => {
     let filtered = prompts;
@@ -103,6 +149,7 @@ export function PromptList({ prompts, searchQuery, selectedIndex, onSelectPrompt
         <TagBar 
           tags={allTags}
           selectedTag={selectedTag}
+          selectedTagIndex={selectedTagIndex}
           onSelectTag={setSelectedTag}
         />
       </div>
@@ -121,4 +168,4 @@ export function PromptList({ prompts, searchQuery, selectedIndex, onSelectPrompt
       </div>
     </div>
   );
-}
+});
