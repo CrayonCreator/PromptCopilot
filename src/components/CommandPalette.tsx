@@ -31,7 +31,8 @@ export function CommandPalette() {
     savePrompt, 
     updatePrompt, 
     deletePrompt, 
-    usePrompt 
+    usePrompt,
+    reorderPrompts
   } = usePrompts(showSuccess);
 
 
@@ -155,6 +156,7 @@ export function CommandPalette() {
             onEditPrompt={handleEditPrompt}
             onDeletePrompt={handleDeletePrompt}
             onFilteredPromptsChange={setFilteredPrompts}
+            onReorderPrompts={reorderPrompts}
           />
 
           {/* 快捷键提示 */}

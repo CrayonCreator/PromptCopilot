@@ -28,18 +28,28 @@ impl Database {
                 tags TEXT NOT NULL,
                 created_at TEXT NOT NULL,
                 updated_at TEXT NOT NULL,
-                last_used TEXT
+                last_used TEXT,
+                sort_order INTEGER DEFAULT 0
             )",
             [],
         )?;
+        
+        let table_info: Vec<String> = conn.prepare("PRAGMA table_info(prompts)")?
+            .query_map([], |row| Ok(row.get::<_, String>(1)?))?
+            .collect::<Result<Vec<_>, _>>()?;
+        
+        if !table_info.contains(&"sort_order".to_string()) {
+            conn.execute("ALTER TABLE prompts ADD COLUMN sort_order INTEGER DEFAULT 0", [])?;
+        }
+        
         Ok(())
     }
 
     pub fn get_all_prompts(&self) -> Result<Vec<Prompt>> {
         let conn = self.conn.lock().unwrap();
         let mut stmt = conn.prepare(
-            "SELECT id, title, content, tags, created_at, updated_at, last_used 
-             FROM prompts ORDER BY last_used DESC, created_at DESC"
+            "SELECT id, title, content, tags, created_at, updated_at, last_used, sort_order 
+             FROM prompts ORDER BY sort_order ASC, last_used DESC, created_at DESC"
         )?;
 
         let prompt_iter = stmt.query_map([], |row| {
@@ -62,6 +72,7 @@ impl Database {
                 created_at: created_at_str.parse().map_err(|_| rusqlite::Error::InvalidColumnType(4, "created_at".to_string(), rusqlite::types::Type::Text))?,
                 updated_at: updated_at_str.parse().map_err(|_| rusqlite::Error::InvalidColumnType(5, "updated_at".to_string(), rusqlite::types::Type::Text))?,
                 last_used: last_used_str.map(|s| s.parse()).transpose().map_err(|_| rusqlite::Error::InvalidColumnType(6, "last_used".to_string(), rusqlite::types::Type::Text))?,
+                sort_order: row.get(7).ok(),
             })
         })?;
 
@@ -75,10 +86,10 @@ impl Database {
     pub fn search_prompts(&self, query: &str) -> Result<Vec<Prompt>> {
         let conn = self.conn.lock().unwrap();
         let mut stmt = conn.prepare(
-            "SELECT id, title, content, tags, created_at, updated_at, last_used 
+            "SELECT id, title, content, tags, created_at, updated_at, last_used, sort_order 
              FROM prompts 
              WHERE title LIKE ?1 OR content LIKE ?1 OR tags LIKE ?1
-             ORDER BY last_used DESC, created_at DESC"
+             ORDER BY sort_order ASC, last_used DESC, created_at DESC"
         )?;
 
         let search_term = format!("%{}%", query);
@@ -102,6 +113,7 @@ impl Database {
                 created_at: created_at_str.parse().map_err(|_| rusqlite::Error::InvalidColumnType(4, "created_at".to_string(), rusqlite::types::Type::Text))?,
                 updated_at: updated_at_str.parse().map_err(|_| rusqlite::Error::InvalidColumnType(5, "updated_at".to_string(), rusqlite::types::Type::Text))?,
                 last_used: last_used_str.map(|s| s.parse()).transpose().map_err(|_| rusqlite::Error::InvalidColumnType(6, "last_used".to_string(), rusqlite::types::Type::Text))?,
+                sort_order: row.get(7).ok(),
             })
         })?;
 
@@ -158,6 +170,21 @@ impl Database {
             "UPDATE prompts SET last_used = ?1 WHERE id = ?2",
             params![now, id],
         )?;
+        Ok(())
+    }
+
+    pub fn reorder_prompts(&self, prompt_ids: &[i64]) -> Result<()> {
+        let conn = self.conn.lock().unwrap();
+        let tx = conn.unchecked_transaction()?;
+        
+        for (index, &prompt_id) in prompt_ids.iter().enumerate() {
+            tx.execute(
+                "UPDATE prompts SET sort_order = ?1 WHERE id = ?2",
+                params![index as i64, prompt_id],
+            )?;
+        }
+        
+        tx.commit()?;
         Ok(())
     }
 }

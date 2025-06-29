@@ -1,4 +1,18 @@
 import { useEffect, useRef, useState, useMemo, forwardRef, useImperativeHandle } from 'react';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 import { Prompt } from '../types/prompt';
 import { PromptItem } from './PromptItem';
 import { TagBar } from './TagBar';
@@ -12,6 +26,7 @@ interface PromptListProps {
   onDeletePrompt: (id: number) => void;
   onFilteredPromptsChange: (prompts: Prompt[]) => void;
   onTagSelectionChange?: (selectedTagIndex: number) => void;
+  onReorderPrompts?: (sourceIndex: number, destinationIndex: number) => void;
 }
 
 export interface PromptListRef {
@@ -27,13 +42,36 @@ export const PromptList = forwardRef<PromptListRef, PromptListProps>(({
   onEditPrompt, 
   onDeletePrompt, 
   onFilteredPromptsChange,
-  onTagSelectionChange 
+  onTagSelectionChange,
+  onReorderPrompts
 }, ref) => {
   const listRef = useRef<HTMLDivElement>(null);
   const selectedItemRef = useRef<HTMLDivElement>(null);
   const tagBarRef = useRef<HTMLDivElement>(null);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [selectedTagIndex, setSelectedTagIndex] = useState(0);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id && onReorderPrompts) {
+      const oldIndex = filteredPrompts.findIndex(prompt => prompt.id.toString() === active.id);
+      const newIndex = filteredPrompts.findIndex(prompt => prompt.id.toString() === over.id);
+      
+      if (oldIndex !== -1 && newIndex !== -1) {
+        const originalOldIndex = prompts.findIndex(prompt => prompt.id === filteredPrompts[oldIndex].id);
+        const originalNewIndex = prompts.findIndex(prompt => prompt.id === filteredPrompts[newIndex].id);
+        onReorderPrompts(originalOldIndex, originalNewIndex);
+      }
+    }
+  };
 
   const allTags = useMemo(() => {
     const tagSet = new Set<string>();
@@ -154,17 +192,29 @@ export const PromptList = forwardRef<PromptListRef, PromptListProps>(({
         />
       </div>
       <div className="prompt-list" ref={listRef}>
-        {filteredPrompts.map((prompt, index) => (
-          <PromptItem
-            key={prompt.id}
-            ref={index === selectedIndex ? selectedItemRef : undefined}
-            prompt={prompt}
-            isSelected={index === selectedIndex}
-            onSelect={() => onSelectPrompt(prompt)}
-            onEdit={() => onEditPrompt(prompt)}
-            onDelete={() => onDeletePrompt(prompt.id)}
-          />
-        ))}
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={filteredPrompts.map(prompt => prompt.id.toString())}
+            strategy={verticalListSortingStrategy}
+          >
+            {filteredPrompts.map((prompt, index) => (
+              <PromptItem
+                key={prompt.id}
+                ref={index === selectedIndex ? selectedItemRef : undefined}
+                prompt={prompt}
+                isSelected={index === selectedIndex}
+                onSelect={() => onSelectPrompt(prompt)}
+                onEdit={() => onEditPrompt(prompt)}
+                onDelete={() => onDeletePrompt(prompt.id)}
+                isDraggable={true}
+              />
+            ))}
+          </SortableContext>
+        </DndContext>
       </div>
     </div>
   );

@@ -62,17 +62,31 @@ export function usePrompts(showToast?: (message: string, type?: 'success' | 'err
       const message = await invoke<string>('paste_to_clipboard', { content: prompt.content });
       await invoke('update_last_used', { id: prompt.id });
       
-      // 显示成功提示
       if (showToast) {
         showToast(message, 'success');
       }
     } catch (error) {
       console.error('Failed to use prompt:', error);
       
-      // 显示错误提示
       if (showToast) {
         showToast('Failed to copy prompt to clipboard', 'error');
       }
+    }
+  };
+
+  const reorderPrompts = async (sourceIndex: number, destinationIndex: number) => {
+    try {
+      const reorderedPrompts = [...prompts];
+      const [removed] = reorderedPrompts.splice(sourceIndex, 1);
+      reorderedPrompts.splice(destinationIndex, 0, removed);
+      
+      setPrompts(reorderedPrompts);
+      
+      const promptIds = reorderedPrompts.map(p => p.id);
+      await invoke('reorder_prompts', { promptIds });
+    } catch (error) {
+      console.error('Failed to reorder prompts:', error);
+      await loadPrompts();
     }
   };
 
@@ -88,6 +102,7 @@ export function usePrompts(showToast?: (message: string, type?: 'success' | 'err
     savePrompt,
     updatePrompt,
     deletePrompt,
-    usePrompt
+    usePrompt,
+    reorderPrompts
   };
 }

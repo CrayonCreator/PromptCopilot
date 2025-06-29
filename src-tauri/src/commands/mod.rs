@@ -42,3 +42,8 @@ pub fn paste_to_clipboard(content: String) -> Result<String, String> {
     
     Ok("Prompt copied to clipboard!".to_string())
 }
+
+#[tauri::command]
+pub fn reorder_prompts(prompt_ids: Vec<i64>, db: State<Database>) -> Result<(), String> {
+    db.reorder_prompts(&prompt_ids).map_err(|e| e.to_string())
+}

@@ -101,7 +101,8 @@ pub fn run() {
             update_prompt,
             delete_prompt,
             update_last_used,
-            paste_to_clipboard
+            paste_to_clipboard,
+            reorder_prompts
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

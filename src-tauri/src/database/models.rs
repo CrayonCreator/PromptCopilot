@@ -10,6 +10,7 @@ pub struct Prompt {
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
     pub last_used: Option<DateTime<Utc>>,
+    pub sort_order: Option<i64>,
 }
 
 #[derive(Debug, Deserialize)]

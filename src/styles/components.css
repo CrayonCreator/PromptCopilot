@@ -172,7 +172,8 @@ html, body {
   padding: 12px 16px;
   border-bottom: 1px solid var(--border-color);
   cursor: pointer;
-  transition: background-color 0.1s;
+  transition: all 0.2s ease;
+  position: relative;
 }
 
 .prompt-item:hover,
@@ -180,11 +181,38 @@ html, body {
   background: var(--bg-hover);
 }
 
+.prompt-item.dragging {
+  opacity: 0.5;
+  transform: rotate(5deg);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+}
+
 .prompt-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   margin-bottom: 8px;
+  gap: 8px;
+}
+
+.drag-handle {
+  color: var(--text-muted);
+  font-size: 16px;
+  cursor: grab;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  user-select: none;
+  line-height: 1;
+}
+
+.drag-handle:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+.drag-handle:active {
+  cursor: grabbing;
 }
 
 .prompt-title {
@@ -192,6 +220,7 @@ html, body {
   font-size: 16px;
   font-weight: 600;
   color: var(--text-primary);
+  flex: 1;
 }
 
 .prompt-actions {
