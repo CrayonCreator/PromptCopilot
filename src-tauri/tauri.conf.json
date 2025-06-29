@@ -13,7 +13,7 @@
      {
         "title": "Prompt Copilot",
         "width": 800,
-        "height": 600,
+        "height": 500,
         "center": true,
         "decorations": true,
         "alwaysOnTop": true,
