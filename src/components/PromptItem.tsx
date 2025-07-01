@@ -2,7 +2,7 @@ import { forwardRef } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Prompt } from '../types/prompt';
-import { useLanguage } from '../hooks/useLanguage';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface PromptItemProps {
   prompt: Prompt;

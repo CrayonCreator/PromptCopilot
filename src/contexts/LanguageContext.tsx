@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 export type Language = 'zh' | 'en';
 
@@ -118,7 +118,19 @@ const translations: Translations = {
   }
 };
 
-export function useLanguage() {
+interface LanguageContextType {
+  language: Language;
+  setLanguage: (language: Language) => void;
+  t: (key: string, params?: Record<string, string>) => string;
+}
+
+const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+
+interface LanguageProviderProps {
+  children: ReactNode;
+}
+
+export function LanguageProvider({ children }: LanguageProviderProps) {
   const [language, setLanguage] = useState<Language>(() => {
     const savedLanguage = localStorage.getItem('language') as Language;
     return savedLanguage || 'zh';
@@ -126,7 +138,6 @@ export function useLanguage() {
 
   useEffect(() => {
     localStorage.setItem('language', language);
-    window.dispatchEvent(new CustomEvent('languageChanged', { detail: language }));
   }, [language]);
 
   const t = (key: string, params?: Record<string, string>): string => {
@@ -141,13 +152,17 @@ export function useLanguage() {
     return text;
   };
 
-  const setLanguage_ = (newLanguage: Language) => {
-    setLanguage(newLanguage);
-  };
+  return (
+    <LanguageContext.Provider value={{ language, setLanguage, t }}>
+      {children}
+    </LanguageContext.Provider>
+  );
+}
 
-  return { 
-    language, 
-    setLanguage: setLanguage_, 
-    t 
-  };
+export function useLanguage() {
+  const context = useContext(LanguageContext);
+  if (context === undefined) {
+    throw new Error('useLanguage must be used within a LanguageProvider');
+  }
+  return context;
 }

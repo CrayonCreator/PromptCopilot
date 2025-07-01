@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { ViewMode, Prompt } from '../types/prompt';
 import { usePrompts } from '../hooks/usePrompts';
 import { useKeyboard } from '../hooks/useKeyboard';
-import { useLanguage } from '../hooks/useLanguage';
+import { useLanguage } from '../contexts/LanguageContext';
 import { useToast } from '../hooks/useToast';
 import { SearchBox } from './SearchBox';
 import { PromptList, PromptListRef } from './PromptList';

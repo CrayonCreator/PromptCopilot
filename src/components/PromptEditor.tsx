@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { PromptInput, Prompt } from '../types/prompt';
-import { useLanguage } from '../hooks/useLanguage';
+import { useLanguage } from '../contexts/LanguageContext';
 import { MarkdownRenderer } from './MarkdownRenderer';
 
 interface PromptEditorProps {

@@ -1,5 +1,5 @@
 import { useTheme, Theme } from '../hooks/useTheme';
-import { useLanguage, Language } from '../hooks/useLanguage';
+import { useLanguage, Language } from '../contexts/LanguageContext';
 
 interface SettingsDialogProps {
   isOpen: boolean;
