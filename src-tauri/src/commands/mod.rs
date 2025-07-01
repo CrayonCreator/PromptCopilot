@@ -93,8 +93,10 @@ pub fn set_autostart(enable: bool) -> Result<(), String> {
             .to_str()
             .ok_or("Failed to convert path to string")?;
         
+        let startup_command = format!("\"{}\" --minimized", exe_path_str);
+        
         run_key
-            .set_value(APP_NAME, &exe_path_str)
+            .set_value(APP_NAME, &startup_command)
             .map_err(|e| format!("Failed to set registry value: {}", e))?;
     } else {
         run_key
