@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { PromptInput, Prompt } from '../types/prompt';
+import { useLanguage } from '../hooks/useLanguage';
 import { MarkdownRenderer } from './MarkdownRenderer';
 
 interface PromptEditorProps {
@@ -15,6 +16,7 @@ export function PromptEditor({ prompt, onSave, onCancel }: PromptEditorProps) {
     tags: ''
   });
   const [isPreviewMode, setIsPreviewMode] = useState(false);
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (prompt) {
@@ -36,18 +38,18 @@ export function PromptEditor({ prompt, onSave, onCancel }: PromptEditorProps) {
 
   return (
     <div className="prompt-editor">
-      <h2>{prompt ? 'Edit Prompt' : 'New Prompt'}</h2>
+      <h2>{prompt ? t('button.edit') + ' Prompt' : t('button.new') + ' Prompt'}</h2>
       
       <form onSubmit={handleSubmit}>
         <div className="form-content">
           <div className="form-group">
-            <label htmlFor="title">Title *</label>
+            <label htmlFor="title">{t('editor.title')} *</label>
             <input
               id="title"
               type="text"
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              placeholder="Enter prompt title..."
+              placeholder={t('editor.title.placeholder')}
               autoFocus
               required
             />
@@ -55,21 +57,21 @@ export function PromptEditor({ prompt, onSave, onCancel }: PromptEditorProps) {
 
           <div className="form-group">
             <div className="content-header">
-              <label htmlFor="content">Content *</label>
+              <label htmlFor="content">{t('editor.content')} *</label>
               <div className="content-tabs">
                 <button
                   type="button"
                   className={`tab-button ${!isPreviewMode ? 'active' : ''}`}
                   onClick={() => setIsPreviewMode(false)}
                 >
-                  Edit
+                  {t('button.edit')}
                 </button>
                 <button
                   type="button"
                   className={`tab-button ${isPreviewMode ? 'active' : ''}`}
                   onClick={() => setIsPreviewMode(true)}
                 >
-                  Preview
+                  {t('editor.preview')}
                 </button>
               </div>
             </div>
@@ -78,7 +80,7 @@ export function PromptEditor({ prompt, onSave, onCancel }: PromptEditorProps) {
                 id="content"
                 value={formData.content}
                 onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                placeholder="Enter prompt content... (Supports Markdown)"
+                placeholder={t('editor.content.placeholder')}
                 rows={8}
                 required
               />
@@ -90,23 +92,23 @@ export function PromptEditor({ prompt, onSave, onCancel }: PromptEditorProps) {
           </div>
 
           <div className="form-group">
-            <label htmlFor="tags">Tags</label>
+            <label htmlFor="tags">{t('editor.tags')}</label>
             <input
               id="tags"
               type="text"
               value={formData.tags}
               onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-              placeholder="Enter tags separated by spaces..."
+              placeholder={t('editor.tags.placeholder')}
             />
           </div>
         </div>
 
         <div className="form-actions">
           <button type="submit" className="btn-primary">
-            {prompt ? 'Update' : 'Save'}
+            {prompt ? t('button.save') : t('button.save')}
           </button>
           <button type="button" onClick={onCancel} className="btn-secondary">
-            Cancel
+            {t('button.cancel')}
           </button>
         </div>
       </form>

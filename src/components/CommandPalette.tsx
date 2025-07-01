@@ -2,13 +2,14 @@ import { useState, useEffect, useRef } from 'react';
 import { ViewMode, Prompt } from '../types/prompt';
 import { usePrompts } from '../hooks/usePrompts';
 import { useKeyboard } from '../hooks/useKeyboard';
-import { useTheme } from '../hooks/useTheme';
+import { useLanguage } from '../hooks/useLanguage';
 import { useToast } from '../hooks/useToast';
 import { SearchBox } from './SearchBox';
 import { PromptList, PromptListRef } from './PromptList';
 import { PromptEditor } from './PromptEditor';
 import { PromptPreview } from './PromptPreview';
 import { ConfirmDialog } from './ConfirmDialog';
+import { SettingsDialog } from './SettingsDialog';
 import { Toast } from './Toast';
 
 export function CommandPalette() {
@@ -21,10 +22,11 @@ export function CommandPalette() {
     prompt: Prompt | null;
   }>({ isOpen: false, prompt: null });
   const [previewPrompt, setPreviewPrompt] = useState<Prompt | null>(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   
   const promptListRef = useRef<PromptListRef>(null);
   
-  const { theme, toggleTheme } = useTheme();
+  const { t } = useLanguage();
   const { toasts, showSuccess, hideToast } = useToast();
   
   const { 
@@ -133,7 +135,7 @@ export function CommandPalette() {
   }, [filteredPrompts, setSelectedIndex]);
 
   if (loading) {
-    return <div className="loading">Loading...</div>;
+    return <div className="loading">{t('loading')}</div>;
   }
 
   return (
@@ -144,17 +146,17 @@ export function CommandPalette() {
             <SearchBox 
               value={searchQuery} 
               onChange={setSearchQuery}
-              placeholder="Search prompts or type 'new' to create..."
+              placeholder={t('search.placeholder')}
             />
             <button 
               className="theme-toggle" 
-              onClick={toggleTheme}
-              title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+              onClick={() => setSettingsOpen(true)}
+              title={t('button.settings')}
             >
-              {theme === 'dark' ? '☀️' : '🌙'}
+              ⚙️
             </button>
             <button onClick={handleNewPrompt} className="btn-new">
-              New
+              {t('button.new')}
             </button>
           </div>
           
@@ -172,7 +174,7 @@ export function CommandPalette() {
 
           {/* 快捷键提示 */}
           <div className="shortcut-hint">
-            Ctrl+Shift+P to toggle
+            {t('shortcut.hint')}
           </div>
         </>
       )}
@@ -182,10 +184,10 @@ export function CommandPalette() {
           <div className="editor-header">
             <button 
               className="theme-toggle-small" 
-              onClick={toggleTheme}
-              title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+              onClick={() => setSettingsOpen(true)}
+              title={t('button.settings')}
             >
-              {theme === 'dark' ? '☀️' : '🌙'}
+              ⚙️
             </button>
           </div>
           <PromptEditor
@@ -199,13 +201,19 @@ export function CommandPalette() {
       {/* 删除确认对话框 */}
       <ConfirmDialog
         isOpen={deleteConfirm.isOpen}
-        title="Delete Prompt"
-        message={`Are you sure you want to delete "${deleteConfirm.prompt?.title}"? This action cannot be undone.`}
-        confirmText="Delete"
-        cancelText="Cancel"
+        title={t('confirm.delete.title')}
+        message={t('confirm.delete.message', { title: deleteConfirm.prompt?.title || '' })}
+        confirmText={t('confirm.delete.confirm')}
+        cancelText={t('confirm.delete.cancel')}
         onConfirm={confirmDelete}
         onCancel={cancelDelete}
         isDangerous={true}
+      />
+
+      {/* 设置对话框 */}
+      <SettingsDialog
+        isOpen={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
       />
 
       {/* Toast 通知 */}

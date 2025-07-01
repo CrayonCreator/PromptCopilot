@@ -2,6 +2,7 @@ import { forwardRef } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Prompt } from '../types/prompt';
+import { useLanguage } from '../hooks/useLanguage';
 
 interface PromptItemProps {
   prompt: Prompt;
@@ -14,6 +15,7 @@ interface PromptItemProps {
 
 export const PromptItem = forwardRef<HTMLDivElement, PromptItemProps>(
   ({ prompt, isSelected, onSelect, onEdit, onDelete, isDraggable = false }, ref) => {
+    const { t } = useLanguage();
     const {
       attributes,
       listeners,
@@ -60,10 +62,10 @@ export const PromptItem = forwardRef<HTMLDivElement, PromptItemProps>(
           <h3 className="prompt-title">{prompt.title}</h3>
           <div className="prompt-actions">
             <button onClick={(e) => { e.stopPropagation(); onEdit(); }} className="btn-edit">
-              Edit
+              {t('button.edit')}
             </button>
             <button onClick={(e) => { e.stopPropagation(); onDelete(); }} className="btn-delete">
-              Delete
+              {t('button.delete')}
             </button>
           </div>
         </div>
