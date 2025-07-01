@@ -27,3 +27,6 @@ rusqlite = { version = "0.31", features = ["bundled"] }
 chrono = { version = "0.4", features = ["serde"] }
 clipboard = "0.5"
 
+[target.'cfg(windows)'.dependencies]
+winreg = "0.52"
+

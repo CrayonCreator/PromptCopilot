@@ -28,6 +28,9 @@ const translations: Translations = {
     'settings.language': '语言',
     'settings.language.zh': '中文',
     'settings.language.en': 'English',
+    'settings.autostart': '开机自启',
+    'settings.autostart.enable': '启用开机自启',
+    'settings.autostart.disable': '禁用开机自启',
     'settings.close': '关闭',
     
     // 编辑器
@@ -82,6 +85,9 @@ const translations: Translations = {
     'settings.language': 'Language',
     'settings.language.zh': '中文',
     'settings.language.en': 'English',
+    'settings.autostart': 'Auto Start',
+    'settings.autostart.enable': 'Enable Auto Start',
+    'settings.autostart.disable': 'Disable Auto Start',
     'settings.close': 'Close',
     
     // Editor

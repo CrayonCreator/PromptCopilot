@@ -1,5 +1,6 @@
 import { useTheme, Theme } from '../hooks/useTheme';
 import { useLanguage, Language } from '../contexts/LanguageContext';
+import { useAutostart } from '../hooks/useAutostart';
 
 interface SettingsDialogProps {
   isOpen: boolean;
@@ -9,6 +10,7 @@ interface SettingsDialogProps {
 export function SettingsDialog({ isOpen, onClose }: SettingsDialogProps) {
   const { theme, toggleTheme } = useTheme();
   const { language, setLanguage, t } = useLanguage();
+  const { isAutostart, toggleAutostart, loading: autostartLoading } = useAutostart();
 
   if (!isOpen) return null;
 
@@ -67,6 +69,22 @@ export function SettingsDialog({ isOpen, onClose }: SettingsDialogProps) {
                 onClick={() => handleLanguageChange('en')}
               >
                 🇺🇸 {t('settings.language.en')}
+              </button>
+            </div>
+          </div>
+
+          {/* 开机自启设置 */}
+          <div className="setting-group">
+            <label className="setting-label">{t('settings.autostart')}</label>
+            <div className="setting-options">
+              <button
+                className={`setting-option ${isAutostart ? 'active' : ''}`}
+                onClick={toggleAutostart}
+                disabled={autostartLoading}
+              >
+                {autostartLoading ? '⏳' : isAutostart ? '✅' : '❌'} 
+                {' '}
+                {isAutostart ? t('settings.autostart.enable') : t('settings.autostart.disable')}
               </button>
             </div>
           </div>
