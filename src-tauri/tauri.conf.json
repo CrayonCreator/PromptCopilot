@@ -10,7 +10,7 @@
   },
   "app": {
     "windows": [
-     {
+      {
         "title": "Prompt Copilot",
         "width": 800,
         "height": 500,
@@ -33,13 +33,25 @@
   },
   "bundle": {
     "active": true,
-    "targets": "all",
+    "targets": [
+      "msi",
+      "nsis"
+    ],
+    "publisher": "Crayon",
     "icon": [
       "icons/icon.ico",
       "icons/icon.png",
       "icons/32x32.png",
       "icons/128x128.png",
       "icons/128x128@2x.png"
-    ]
+    ],
+    "category": "Productivity",
+    "shortDescription": "轻量级本地 Prompt 管理工具",
+    "longDescription": "帮助 AI 用户高效管理和复用 Prompt 的桌面应用",
+    "windows": {
+      "certificateThumbprint": null,
+      "digestAlgorithm": "sha256",
+      "timestampUrl": ""
+    }
   }
 }
