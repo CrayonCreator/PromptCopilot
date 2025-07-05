@@ -1309,3 +1309,201 @@ html, body {
     width: 100%;
   }
 }
+
+/* 标签选择器样式 */
+.tag-selector {
+  position: relative;
+  width: 100%;
+}
+
+.tag-selector-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  min-height: 36px;
+  padding: 6px 8px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: var(--bg-primary);
+  cursor: text;
+  transition: border-color 0.2s;
+}
+
+.tag-selector-container:focus-within {
+  border-color: var(--accent-color, var(--input-focus));
+  box-shadow: 0 0 0 2px rgba(0, 122, 204, 0.2);
+}
+
+.selected-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.selected-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  background: var(--btn-primary);
+  color: white;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.remove-tag-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  width: 14px;
+  height: 14px;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.remove-tag-btn:hover {
+  opacity: 1;
+}
+
+.remove-tag-btn svg {
+  width: 10px;
+  height: 10px;
+  fill: none;
+  stroke: currentColor;
+}
+
+.tag-input-wrapper {
+  flex: 1;
+  min-width: 120px;
+}
+
+.tag-input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  color: var(--text-primary);
+  padding: 0;
+  margin: 0;
+}
+
+.tag-input::placeholder {
+  color: var(--text-secondary);
+}
+
+.tag-input:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.tag-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  margin-top: 2px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.tag-options {
+  padding: 4px 0;
+}
+
+.tag-option {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text-primary);
+  transition: background-color 0.2s;
+}
+
+.tag-option:hover,
+.tag-option.highlighted {
+  background: var(--bg-secondary);
+}
+
+.existing-tag-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tag-icon {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.create-tag-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--btn-primary);
+  font-weight: 500;
+}
+
+.create-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  background: var(--btn-primary);
+  border-radius: 50%;
+  vertical-align: top;
+}
+
+.create-icon svg {
+  width: 10px;
+  height: 10px;
+  fill: white;
+}
+
+.no-options {
+  padding: 12px;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-style: italic;
+}
+
+.tag-dropdown-hint {
+  padding: 6px 12px;
+  border-top: 1px solid var(--border-color);
+  background: var(--bg-tertiary);
+  font-size: 11px;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.tag-count {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-size: 10px;
+  padding: 2px 4px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}

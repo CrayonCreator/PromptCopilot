@@ -192,6 +192,7 @@ export function CommandPalette() {
           </div>
           <PromptEditor
             prompt={editingPrompt}
+            allPrompts={prompts}
             onSave={handleSavePrompt}
             onCancel={handleCancel}
           />

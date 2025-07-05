@@ -2,14 +2,17 @@ import { useState, useEffect } from 'react';
 import { PromptInput, Prompt } from '../types/prompt';
 import { useLanguage } from '../contexts/LanguageContext';
 import { MarkdownRenderer } from './MarkdownRenderer';
+import { TagSelector } from './TagSelector';
+import { useTags } from '../hooks/useTags';
 
 interface PromptEditorProps {
   prompt?: Prompt;
+  allPrompts: Prompt[];
   onSave: (promptData: PromptInput) => Promise<void>;
   onCancel: () => void;
 }
 
-export function PromptEditor({ prompt, onSave, onCancel }: PromptEditorProps) {
+export function PromptEditor({ prompt, allPrompts, onSave, onCancel }: PromptEditorProps) {
   const [formData, setFormData] = useState<PromptInput>({
     title: '',
     content: '',
@@ -17,6 +20,7 @@ export function PromptEditor({ prompt, onSave, onCancel }: PromptEditorProps) {
   });
   const [isPreviewMode, setIsPreviewMode] = useState(false);
   const { t } = useLanguage();
+  const { allTags } = useTags(allPrompts);
 
   useEffect(() => {
     if (prompt) {
@@ -93,12 +97,12 @@ export function PromptEditor({ prompt, onSave, onCancel }: PromptEditorProps) {
 
           <div className="form-group">
             <label htmlFor="tags">{t('editor.tags')}</label>
-            <input
-              id="tags"
-              type="text"
-              value={formData.tags}
-              onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
+            <TagSelector
+              selectedTags={formData.tags.split(' ').filter(tag => tag.trim())}
+              availableTags={allTags}
+              onChange={(tags) => setFormData({ ...formData, tags: tags.join(' ') })}
               placeholder={t('editor.tags.placeholder')}
+              maxTags={10}
             />
           </div>
         </div>
